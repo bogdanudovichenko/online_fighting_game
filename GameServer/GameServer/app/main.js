@@ -124,11 +124,18 @@ document.onkeyup = onKeyUp;
 function onKeyDown(ev) {
     isKeyDown = true;
     pressedKeyCodes[ev.keyCode] = true;
+
+    if (ev.keyCode != keys.space) {
+        delete pressedKeyCodes[keys.space];
+    }
 }
 
 function onKeyUp(ev) {
     isKeyDown = false;
-    delete pressedKeyCodes[ev.keyCode];
+
+    if (ev.keyCode != keys.space) {
+        delete pressedKeyCodes[ev.keyCode];
+    }
 }
 
 function tick() {
@@ -158,7 +165,21 @@ function tick() {
         }
     }
 
-    if (!isKeyDown) {
+    if (isKeyDown && pressedKeyCodes[keys.space]) { //jump
+        if (mySelfState.animation.currentAnimation !== actionsEnum.jump) {
+            mySelfState.animation.gotoAndPlay(actionsEnum.jump);
+        }
+
+        mySelfState.animation.y -= 20;
+        if (mySelfState.animation.scaleX === 1) mySelfState.animation.x += 10;
+        else if (mySelfState.animation.scaleX === -1) mySelfState.animation.x -= 10; 
+
+        setTimeout(function () {
+            mySelfState.animation.y += 20;
+        }, 500);
+    }
+
+    if (!isKeyDown && !pressedKeyCodes[keys.space]) {
         mySelfState.animation.gotoAndPlay(actionsEnum.stay);
     }
 
