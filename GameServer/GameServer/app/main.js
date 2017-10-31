@@ -28,26 +28,67 @@ function setupBackgroundImage(loadedComplete) {
 }
 
 function loadPlayersSprites() {
-    loadPlayerSprites($('#player1Url').val());
+    loadPlayer1Sprites();
+    loadPlayer2Sprites();
 }
 
-function loadPlayerSprites(imageUrl) {
+function loadPlayer1Sprites() {
     var img = new Image();
-    img.src = imageUrl;
+    img.src = $('#player1Url').val();
 
     img.onload = function () {
-        var data = {
+        var width = 102;
+        var height = width;
+
+        var spriteData = {
             images: [img],
-            frames: { width: 51 * 2, height: 51 * 2, regY: 102 - canvas.height },
+            frames: { width: width, height: height, regY: height - canvas.height },
             animations: {
-                walk: [0, 7, "walk"]
+                stayRight: [8, 8, "stayRight"],
+                walkRight: [0, 7, "walkRight"],
+                strikeRight: [30, 38, "stayRight"],
+                jumpRight: [16, 24, "stayRight"]
             }
         };
 
-        var spriteSheet = new createjs.SpriteSheet(data);
-        var animation = new createjs.Sprite(spriteSheet, "walk");
+        var spriteSheet = new createjs.SpriteSheet(spriteData);
+
+        var animation = new createjs.Sprite(spriteSheet, "walkRight");
         stage.addChild(animation);
         
+        createjs.Ticker.setFPS(8);
+        createjs.Ticker.addEventListener("tick", stage);
+    };
+}
+
+function loadPlayer2Sprites(imageUrl) {
+    var img = new Image();
+    img.src = $('#player1Url').val();
+
+    img.onload = function () {
+        var width = 102;
+        var height = width;
+
+        var spriteData = {
+            images: [img],
+            frames: { width: width, height: height, regX: 750, /*regX: width - canvas.width,*/ regY: height - canvas.height },
+            animations: {
+                stayRight: [8, 8, "stayRight"],
+                walkRight: [0, 7, "walkRight"],
+                strikeRight: [30, 38, "stayRight"],
+                jumpRight: [16, 24, "stayRight"]
+            }
+        };
+
+        var spriteSheet = new createjs.SpriteSheet(spriteData);
+        //console.log(spriteSheet);
+        //spriteSheet.scaleX = -spriteSheet.scaleX;
+
+        var animation = new createjs.Sprite(spriteSheet, "walkRight");
+        animation.scaleX = -1;
+        console.log(animation.scaleX);
+        stage.addChild(animation);
+
         createjs.Ticker.setFPS(8);
         createjs.Ticker.addEventListener("tick", stage);
     };
