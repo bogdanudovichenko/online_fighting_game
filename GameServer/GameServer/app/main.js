@@ -86,7 +86,6 @@ function loadPlayerSprites(playerNumber) {
             frames: {
                 width: width,
                 height: height,
-                regX: playerNumber === 1 ? 0 : canvas.width,
                 regY: height - canvas.height
             },
             animations: {
@@ -100,7 +99,7 @@ function loadPlayerSprites(playerNumber) {
         var spriteSheet = new createjs.SpriteSheet(spriteData);
 
         var animation = new createjs.Sprite(spriteSheet, "stay");
-        if (playerNumber === 2) animation.scaleX = -1;
+
         stage.addChild(animation);
         
         createjs.Ticker.setFPS(8);
@@ -113,6 +112,8 @@ function loadPlayerSprites(playerNumber) {
         else if (playerNumber === 2) {
             player2State.animation = animation;
             player2State.width = width;
+            animation.scaleX = -1;
+            animation.x = canvas.width;
         }
     };
 }
@@ -152,7 +153,7 @@ function tick() {
         if (mySelfState.animation.scaleX !== -1) {
             mySelfState.animation.scaleX = -1;
             mySelfState.animation.x += mySelfState.width;
-        } else if (mySelfState.animation.x < canvas.width - mySelfState.width) {
+        } else if (mySelfState.animation.x > mySelfState.width) {
             mySelfState.animation.x -= 15;
         }
     }
