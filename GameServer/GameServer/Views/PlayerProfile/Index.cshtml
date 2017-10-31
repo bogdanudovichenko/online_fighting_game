@@ -1,0 +1,59 @@
+﻿@model GameServer.Models.Game.Player
+
+@{
+    ViewBag.Title = "Index";
+}
+
+<br>
+
+<div class="row">
+    <div class="chat-wrapper col-md-5 col-md-offset-4 col-sm-5 col-sm-offset-4">
+        <div id="chat-body">
+            <div class="row">
+                <div id="chatroom" class="col-md-5"></div>
+            </div>
+            <div class="row">
+                <div class="col-md-12">
+                    <textarea type="text" id="message" class="form-control" rows="5"></textarea>
+                </div>
+            </div>
+            <br>
+            <div class="row">
+                <div class="col-md-3 col-md-offset-4">
+                    <input type="button" id="sendmessage" value="Отправить" class="btn btn-info" />
+                </div>
+            </div>
+        </div>
+        <input id="hdId" type="hidden" />
+        <input id="username" type="hidden" value="@User.Identity.Name" />
+    </div>
+</div>
+<script>
+
+    $(function () {
+        var chat = $.connection.chatHub;
+
+        $.connection.hub.start().done(function () {
+            $('#sendmessage').click(function () {
+                var msg = $('#message').val();
+
+                if (!msg) {
+                    return;
+                }
+
+                chat.server.send(msg);
+                $('#message').val('');
+            });
+        });
+
+        chat.client.addMessage = function (name, message) {
+            $('#chatroom').append('<p><b>' + htmlEncode(name)
+                + '</b>: ' + htmlEncode(message) + '</p>');
+        };
+    });
+
+    function htmlEncode(value) {
+        var encodedValue = $('<div />').text(value).html();
+        return encodedValue;
+    }
+</script>
