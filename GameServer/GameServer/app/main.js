@@ -28,7 +28,7 @@ function setupBackgroundImage(loadedComplete) {
 }
 
 function loadPlayersSprites() {
-    loadPlayerSprites($('#player1runUrl').val());
+    loadPlayerSprites($('#player1Url').val());
 }
 
 function loadPlayerSprites(imageUrl) {
@@ -38,18 +38,17 @@ function loadPlayerSprites(imageUrl) {
     img.onload = function () {
         var data = {
             images: [img],
-            frames: { width: 127, height: 79, regY: 81 - canvas.height },
+            frames: { width: 51 * 2, height: 51 * 2, regY: 102 - canvas.height },
             animations: {
-                walk: [0, 1, "walk"]
+                walk: [0, 7, "walk"]
             }
         };
 
         var spriteSheet = new createjs.SpriteSheet(data);
         var animation = new createjs.Sprite(spriteSheet, "walk");
-        console.log('animation', animation);
         stage.addChild(animation);
         
-        createjs.Ticker.setFPS(2);
+        createjs.Ticker.setFPS(8);
         createjs.Ticker.addEventListener("tick", stage);
     };
 }

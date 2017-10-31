@@ -4,7 +4,7 @@
 }
 
 <canvas id="game-canvas" width="766" height="351"></canvas>
-<div class="row">
+<div class="row" hidden>
     <div class="col-md-12">
         <button id="playerJumpBtn">Прыгнуть</button>
         <button id="playerDownBtn">Присесть</button>
@@ -14,13 +14,10 @@
         <button id="playerBlockBtn">Блок</button>
     </div>
 </div>
-<input id="gameBgUrl" type="hidden" value="~/Content/game/bg.bmp" />
 
+<input id="gameBgUrl" type="hidden" value="~/Content/game/bg.bmp" />
 <input id="player1Url" type="hidden" value="~/Content/game/player1.png" />
-<input id="player1runUrl" type="hidden" value="~/Content/game/player1run.png" />
-<input id="player1reverseUrl" type="hidden" value="~/Content/game/player1reverse.png" />
 <input id="player2Url" type="hidden" value="~/Content/game/player2.png" />
-<input id="player2reverseUrl" type="hidden" value="~/Content/game/player2reverse.png" />
 
 <script src="~/Scripts/easeljs-0.8.2.min.js"></script>
 <script src="~/app/main.js"></script>
