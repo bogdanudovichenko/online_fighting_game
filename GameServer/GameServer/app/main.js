@@ -91,8 +91,8 @@ function loadPlayerSprites(playerNumber) {
             animations: {
                 stay: [8, 8, "stay"],
                 walk: [0, 7, "walk"],
-                strike: [30, 38, "stay"],
-                jump: [16, 24, "stay"]
+                strike: [30, 31, "stay"],
+                jump: [16, 23, "stay"]
             }
         };
 
@@ -123,64 +123,80 @@ document.onkeyup = onKeyUp;
 
 function onKeyDown(ev) {
     isKeyDown = true;
-    pressedKeyCodes[ev.keyCode] = true;
+    pressedKeyCodes[keys.ctrl] = true;
 
-    if (ev.keyCode != keys.space) {
+    if (ev.keyCode === keys.ctrl) {
+        pressedKeyCodes[keys.ctrl] = true;
+
+        setTimeout(function () {
+            delete pressedKeyCodes[keys.ctrl];
+        }, 400);
+    }
+    
+    if (ev.keyCode !== keys.space) {
         delete pressedKeyCodes[keys.space];
+    }
+
+    if (ev.keyCode !== keys.ctrl) {
+        delete pressedKeyCodes[keys.ctrl];
     }
 }
 
 function onKeyUp(ev) {
     isKeyDown = false;
 
-    if (ev.keyCode != keys.space) {
+    if (ev.keyCode !== keys.space && ev.keyCode !== keys.ctrl) {
         delete pressedKeyCodes[ev.keyCode];
     }
 }
 
 function tick() {
-    if (isKeyDown && pressedKeyCodes[keys.d]) { //move right
-        if (mySelfState.animation.currentAnimation !== actionsEnum.walk) {
-            mySelfState.animation.gotoAndPlay(actionsEnum.walk);
+    if (isKeyDown) {
+        if (pressedKeyCodes[keys.d]) { //move right
+            if (mySelfState.animation.currentAnimation !== actionsEnum.walk) {
+                mySelfState.animation.gotoAndPlay(actionsEnum.walk);
+            }
+
+            if (mySelfState.animation.scaleX !== 1) {
+                mySelfState.animation.scaleX = 1;
+                mySelfState.animation.x -= mySelfState.width;
+            } else if (mySelfState.animation.x < canvas.width - mySelfState.width) {
+                mySelfState.animation.x += 15;
+            }
         }
 
-        if (mySelfState.animation.scaleX !== 1) {
-            mySelfState.animation.scaleX = 1;
-            mySelfState.animation.x -= mySelfState.width;
-        } else if (mySelfState.animation.x < canvas.width - mySelfState.width) {
-            mySelfState.animation.x += 15;
-        }
-    }
+        if (pressedKeyCodes[keys.a]) { //move left
+            if (mySelfState.animation.currentAnimation !== actionsEnum.walk) {
+                mySelfState.animation.gotoAndPlay(actionsEnum.walk);
+            }
 
-    if (isKeyDown && pressedKeyCodes[keys.a]) { //move left
-        if (mySelfState.animation.currentAnimation !== actionsEnum.walk) {
-            mySelfState.animation.gotoAndPlay(actionsEnum.walk);
-        }
-
-        if (mySelfState.animation.scaleX !== -1) {
-            mySelfState.animation.scaleX = -1;
-            mySelfState.animation.x += mySelfState.width;
-        } else if (mySelfState.animation.x > mySelfState.width) {
-            mySelfState.animation.x -= 15;
-        }
-    }
-
-    if (isKeyDown && pressedKeyCodes[keys.space]) { //jump
-        if (mySelfState.animation.currentAnimation !== actionsEnum.jump) {
-            mySelfState.animation.gotoAndPlay(actionsEnum.jump);
+            if (mySelfState.animation.scaleX !== -1) {
+                mySelfState.animation.scaleX = -1;
+                mySelfState.animation.x += mySelfState.width;
+            } else if (mySelfState.animation.x > mySelfState.width) {
+                mySelfState.animation.x -= 15;
+            }
         }
 
-        mySelfState.animation.y -= 20;
-        if (mySelfState.animation.scaleX === 1) mySelfState.animation.x += 10;
-        else if (mySelfState.animation.scaleX === -1) mySelfState.animation.x -= 10; 
+        if (pressedKeyCodes[keys.space]) { //jump
+            if (mySelfState.animation.currentAnimation !== actionsEnum.jump) {
+                mySelfState.animation.gotoAndPlay(actionsEnum.jump);
+            }
 
-        setTimeout(function () {
-            mySelfState.animation.y += 20;
-        }, 500);
-    }
+            mySelfState.animation.y -= 20;
+            if (mySelfState.animation.scaleX === 1) mySelfState.animation.x += 10;
+            else if (mySelfState.animation.scaleX === -1) mySelfState.animation.x -= 10;
 
-    if (!isKeyDown && !pressedKeyCodes[keys.space]) {
+            setTimeout(function () {
+                mySelfState.animation.y += 20;
+            }, 500);
+        }
+    } else if (!pressedKeyCodes[keys.space] && !pressedKeyCodes[keys.ctrl]) {
         mySelfState.animation.gotoAndPlay(actionsEnum.stay);
+    } else if (pressedKeyCodes[keys.ctrl]) {
+        if (mySelfState.animation.currentAnimation !== actionsEnum.strike) { //strike
+            mySelfState.animation.gotoAndPlay(actionsEnum.strike);
+        }
     }
 
     stage.update();
