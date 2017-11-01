@@ -23,6 +23,11 @@ var actionsEnum = {
     strike: 'strike'
 };
 
+var directionsEnum = {
+    left: 'left',
+    right: 'right'
+};
+
 var actions = Object.keys(actionsEnum);
 
 var isKeyDown = false;
@@ -37,6 +42,46 @@ var player2State = {
 
 var mySelfState = null;
 var enemyState = null;
+
+var enemyActionsQueue = [];
+
+enemyActionsQueue = [
+    { action: 'walk', direction: 'left' },
+    { action: 'walk', direction: 'left' },
+    { action: 'walk', direction: 'left' },
+    { action: 'walk', direction: 'left' },
+    { action: 'walk', direction: 'left' },
+    { action: 'walk', direction: 'left' },
+    { action: 'walk', direction: 'left' },
+    { action: 'walk', direction: 'left' },
+
+    { action: 'walk', direction: 'right' },
+    { action: 'walk', direction: 'right' },
+    { action: 'walk', direction: 'right' },
+    { action: 'walk', direction: 'right' },
+    { action: 'walk', direction: 'right' },
+    { action: 'walk', direction: 'right' },
+    { action: 'walk', direction: 'right' },
+    { action: 'walk', direction: 'right' },
+
+    { action: 'walk', direction: 'left' },
+    { action: 'walk', direction: 'left' },
+    { action: 'walk', direction: 'left' },
+    { action: 'walk', direction: 'left' },
+    { action: 'walk', direction: 'left' },
+    { action: 'walk', direction: 'left' },
+    { action: 'walk', direction: 'left' },
+    { action: 'walk', direction: 'left' },
+
+    { action: 'walk', direction: 'right' },
+    { action: 'walk', direction: 'right' },
+    { action: 'walk', direction: 'right' },
+    { action: 'walk', direction: 'right' },
+    { action: 'walk', direction: 'right' },
+    { action: 'walk', direction: 'right' },
+    { action: 'walk', direction: 'right' },
+    { action: 'walk', direction: 'right' },
+];
 
 function start() {
     canvas = document.getElementById('game-canvas');
@@ -149,6 +194,13 @@ function onKeyUp(ev) {
 }
 
 function tick() {
+    playerTick();
+    enemyTick();
+
+    stage.update();
+}
+
+function playerTick() {
     if (isKeyDown) {
         if (pressedKeyCodes[keys.d]) { //move right
             if (mySelfState.animation.currentAnimation !== actionsEnum.walk) {
@@ -197,6 +249,35 @@ function tick() {
             mySelfState.animation.gotoAndPlay(actionsEnum.strike);
         }
     }
+}
 
-    stage.update();
+function enemyTick() {
+    if (!enemyActionsQueue.length) {
+        enemyState.animation.gotoAndPlay(actionsEnum.stay);
+        return;
+    }
+
+    var enemyAction = enemyActionsQueue.shift();
+
+    if (enemyAction.action === actionsEnum.walk) {
+        if (enemyState.animation.currentAnimation !== actionsEnum.walk) {
+            enemyState.animation.gotoAndPlay(actionsEnum.walk);
+        }
+
+        if (enemyAction.direction === directionsEnum.left) {
+            if (enemyState.animation.scaleX !== -1) {
+                enemyState.animation.scaleX = -1;
+                enemyState.animation.x += mySelfState.width;
+            }
+
+            enemyState.animation.x -= 15;
+        } else {
+            if (enemyState.animation.scaleX !== 1) {
+                enemyState.animation.scaleX = 1;
+                enemyState.animation.x -= mySelfState.width;
+            }
+
+            enemyState.animation.x += 15;
+        }
+    }
 }
