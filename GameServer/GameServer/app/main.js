@@ -123,11 +123,9 @@ document.onkeyup = onKeyUp;
 
 function onKeyDown(ev) {
     isKeyDown = true;
-    pressedKeyCodes[keys.ctrl] = true;
+    pressedKeyCodes[ev.keyCode] = true;
 
     if (ev.keyCode === keys.ctrl) {
-        pressedKeyCodes[keys.ctrl] = true;
-
         setTimeout(function () {
             delete pressedKeyCodes[keys.ctrl];
         }, 400);
@@ -191,6 +189,7 @@ function tick() {
                 mySelfState.animation.y += 20;
             }, 500);
         }
+
     } else if (!pressedKeyCodes[keys.space] && !pressedKeyCodes[keys.ctrl]) {
         mySelfState.animation.gotoAndPlay(actionsEnum.stay);
     } else if (pressedKeyCodes[keys.ctrl]) {
