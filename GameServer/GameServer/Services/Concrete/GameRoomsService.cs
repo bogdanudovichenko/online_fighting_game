@@ -27,21 +27,38 @@ namespace GameServer.Services.Concrete
             IEnumerable<GameRoom> rooms = await _roomRepository.GetAllAsync();
             IEnumerable<Player> players = await _playerRepository.GetAllAsync();
 
-            return rooms.Select(r => new GameRoomViewModel
+            var roomsForView = rooms.Select(r => new GameRoomViewModel
             {
                 Id = r.Id,
                 Player1 = new PlayerForRoomViewModel
                 {
                     Id = r.Player1Id,
-                    PlayerName = players.FirstOrDefault(p => p.Id == r.Player1Id)?.Login
+                    Name = players.FirstOrDefault(p => p.Id == r.Player1Id)?.Login,
+                    Ready = r.Player1Ready
                 },
                 Player2 = new PlayerForRoomViewModel
                 {
                     Id = r.Player2Id,
-                    PlayerName = players.FirstOrDefault(p => p.Id == r.Player2Id)?.Login
+                    Name = players.FirstOrDefault(p => p.Id == r.Player2Id)?.Login,
+                    Ready = r.Player1Ready
                 },
                 RoomStatus = r.RoomStatus
             }).ToList();
+
+            foreach(GameRoomViewModel room in roomsForView)
+            {
+                if(string.IsNullOrEmpty(room.Player1.Name) || !room.Player1.Id.HasValue)
+                {
+                    room.Player1 = null;
+                }
+
+                if (string.IsNullOrEmpty(room.Player2.Name) || !room.Player2.Id.HasValue)
+                {
+                    room.Player2 = null;
+                }
+            }
+
+            return roomsForView;
         }
 
         public async Task CreateRoomAsync(int playerId)

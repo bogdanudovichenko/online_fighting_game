@@ -49,7 +49,7 @@ namespace GameServer.Hubs
         public async Task GetRooms()
         {
             IEnumerable<GameRoomViewModel> rooms = await _gameRoomsService.GetAllForViewAsync();
-            Clients.Caller.SentRooms(rooms.ToJson());
+            Clients.Caller.SentRooms(rooms);
         }
 
         public async Task CreateRoom()

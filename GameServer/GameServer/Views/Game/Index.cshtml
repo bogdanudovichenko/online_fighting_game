@@ -3,21 +3,17 @@
     ViewBag.Title = "Game";
 }
 
-<canvas id="game-canvas" width="766" height="351"></canvas>
-<div class="row" hidden>
-    <div class="col-md-12">
-        <button id="playerJumpBtn">Прыгнуть</button>
-        <button id="playerDownBtn">Присесть</button>
-        <button id="playerLeftBtn">Влево</button>
-        <button id="playerRightBtn">Вправо</button>
-        <button id="playerStrikeBtn">Удар</button>
-        <button id="playerBlockBtn">Блок</button>
-    </div>
+<br>
+<div id="rooms-wrapper">
+
 </div>
+
+<canvas id="game-canvas" width="766" height="351"></canvas>
 
 <input id="gameBgUrl" type="hidden" value="~/Content/game/bg.bmp" />
 <input id="player1Url" type="hidden" value="~/Content/game/player1.png" />
 <input id="player2Url" type="hidden" value="~/Content/game/player2.png" />
 
 <script src="~/Scripts/easeljs-0.8.2.min.js"></script>
+<script src="~/app/gameRoomsManagement.js"></script>
 <script src="~/app/main.js"></script>

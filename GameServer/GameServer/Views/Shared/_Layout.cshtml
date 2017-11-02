@@ -34,7 +34,7 @@
                     }
                     else
                     {
-                        <li>@Html.ActionLink(User.Identity.Name, "Index", "PlayerProfile", new { area = "" }, new { @class = "navbar-brand" })</li>
+                        <li>@Html.ActionLink(User.Identity.Name, "Index", "PlayerProfile", new { area = "" }, new { id="player-name-block", @class = "navbar-brand" })</li>
                         <li>@Html.ActionLink("Играть", "Index", "Game", new { area = "" }, new { @class = "navbar-brand" })</li>
                         <li>@Html.ActionLink("Выход", "Logout", "Auth", new { area = "" }, new { @class = "navbar-brand" })</li>
                     }

@@ -1,4 +1,4 @@
-﻿$(document).ready(start);
+﻿//$(document).ready(startBattle);
 
 var canvas = null;
 var stage = null;
@@ -83,7 +83,7 @@ enemyActionsQueue = [
     { action: 'walk', direction: 'right' },
 ];
 
-function start() {
+function startBattle() {
     canvas = document.getElementById('game-canvas');
     stage = new createjs.Stage(canvas);
     init();
