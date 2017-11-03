@@ -45,7 +45,7 @@ function renderGameRooms(rooms) {
 
     if (!isPlayerInAnyRoom(playerId)) {
         var button = `<button id="create-room-btn" class="btn btn-success create-room-btn" onclick="createRoom()">
-                            Create room
+                            Создать комнату
                       </button>`
         $roomsTable.parent().parent().append(button);
     }
@@ -62,7 +62,7 @@ function renderGameRoom(room) {
                     <input type="hidden" value="${room.Id}" />
                     <input type="hidden" value="${room.Player1.Id}" />
                     <span>${room.Player1.Name}</span>
-                    <span>${room.Player1.Ready ? '[Ready]' : ''}</span>
+                    <span>${room.Player1.Ready ? '[Готов]' : ''}</span>
                 </td>`
              : '<td class="game-room-player-wrapper col-sm-2"><input type="hidden" value="${room.Id}" />-</td>'
             }
@@ -72,20 +72,20 @@ function renderGameRoom(room) {
                 <td>
                     <input type="hidden" value="${room.Player2.Id}" />
                     <span>${room.Player2.Name}</span>
-                    <span>${room.Player2.Ready ? '[Ready]' : ''}</span>
+                    <span>${room.Player2.Ready ? '[Готов]' : ''}</span>
                 </td>
                 <td>
-                    ${!isPlayerInRoom(room.Id, playerId) && !isPlayerInAnyRoom(playerId) ? `<button class="btn btn-primary game-room-btn" onclick="joinRoom(${room.Id})">JoinRoom</button>` : ''} 
-                    ${isPlayerInRoom(room.Id, playerId) ? `<button class="btn btn-primary game-room-btn" onclick="leaveRoom()">Leave Room</button>` : ''}
-                    ${isPlayerInRoom(room.Id, playerId) && !isPlayerReady(room, playerId) ? `<button class="btn btn-primary game-room-btn" onclick="iamReady()">I am ready</button>` : ''}
+                    ${!isPlayerInRoom(room.Id, playerId) && !isPlayerInAnyRoom(playerId) ? `<button class="btn btn-primary game-room-btn" onclick="joinRoom(${room.Id})">Присоедениться</button>` : ''} 
+                    ${isPlayerInRoom(room.Id, playerId) ? `<button class="btn btn-primary game-room-btn" onclick="leaveRoom()">Покинуть комнату</button>` : ''}
+                    ${isPlayerInRoom(room.Id, playerId) && !isPlayerReady(room, playerId) ? `<button class="btn btn-primary game-room-btn" onclick="iamReady()">я готов</button>` : ''}
                 </td>
                 `
              : 
                 `<td class="game-room-player-wrapper col-sm-2">-</td>
                  <td>
-                    ${!isPlayerInRoom(room.Id, playerId) && !isPlayerInAnyRoom(playerId) ? `<button class="btn btn-primary game-room-btn" onclick="joinRoom(${room.Id})">JoinRoom</button>` : ''} 
-                    ${isPlayerInRoom(room.Id, playerId) ? `<button class="btn btn-primary game-room-btn" onclick="leaveRoom()">Leave Room</button>` : ''}
-                    ${isPlayerInRoom(room.Id, playerId) && !isPlayerReady(room, playerId) ? `<button class="btn btn-primary game-room-btn" onclick="iamReady()">I am ready</button>` : ''}
+                    ${!isPlayerInRoom(room.Id, playerId) && !isPlayerInAnyRoom(playerId) ? `<button class="btn btn-primary game-room-btn" onclick="joinRoom(${room.Id})">Присоедениться</button>` : ''} 
+                    ${isPlayerInRoom(room.Id, playerId) ? `<button class="btn btn-primary game-room-btn" onclick="leaveRoom()">Покинуть комнату</button>` : ''}
+                    ${isPlayerInRoom(room.Id, playerId) && !isPlayerReady(room, playerId) ? `<button class="btn btn-primary game-room-btn" onclick="iamReady()">я готов</button>` : ''}
                  </td>
                  ` 
             }
