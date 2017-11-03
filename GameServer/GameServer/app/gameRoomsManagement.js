@@ -1,5 +1,6 @@
 ﻿var gameRoomsList = [];
 var playerId = null;
+var gameHub = null;
 
 $.get('/api/player/getMyId').done(id => {
     playerId = id;
@@ -8,7 +9,7 @@ $.get('/api/player/getMyId').done(id => {
 $(document).ready(function () {
     window.gameCanvas = $('#game-canvas')
     gameCanvas.hide();
-    window.$roomsWrapper = $('#rooms-wrapper');
+    window.$roomsTable = $('#rooms-table');
 
     gameHubInit();
 });
@@ -18,6 +19,7 @@ function gameHubInit() {
 
     $.connection.hub.start().done(function () {
         gameHub.server.getRooms();
+        window.gameHub = gameHub;
     });
 
     gameHub.client.sentRooms = function (rooms) {
@@ -26,7 +28,7 @@ function gameHubInit() {
 }
 
 function renderGameRooms(rooms) {
-    $roomsWrapper.empty();
+    $roomsTable.empty();
 
     gameRoomsList = [];
 
@@ -36,7 +38,15 @@ function renderGameRooms(rooms) {
         renderGameRoom(room);
     });
 
-    if (!isPlayerInAnyRoom(playerId)) $roomsWrapper.append('<button class="btn btn-success create-room-btn">Create room</button>');
+    var $existingButton = $('#create-room-btn');
+    $existingButton.remove();
+
+    if (!isPlayerInAnyRoom(playerId)) {
+        var button = `<button id="create-room-btn" class="btn btn-success create-room-btn" onclick="createRoom">
+                            Create room
+                      </button>`
+        $roomsTable.parent().parent().append(button);
+    }
 }
 
 function renderGameRoom(room) {
@@ -44,50 +54,56 @@ function renderGameRoom(room) {
 
     gameRoomsList.push({ room: room });
 
-    var $gameRoomDiv = `
-        <br>
-        <div class="room-wrapper row">
-            <input type="hidden" value="${room.Id}" />
-
+    var $gameRoomTr = `
+        <tr>
             ${ room.Player1
-                ? `
-                <div class="game-room-player-wrapper game-room-player1-wrapper col-sm-2 col-sm-offset-1">
+            ? `
+                <td>
+                    <input type="hidden" value="${room.Id}" />
                     <input type="hidden" value="${room.Player1.Id}" />
                     <span>${room.Player1.Name}</span>
                     <span>${room.Player1.Ready ? 'Ready' : ''}</span>
-                </div>`
-                : '<div class="game-room-player-wrapper col-sm-2">-</div>'
-             }
+                </td>`
+             : '<td class="game-room-player-wrapper col-sm-2"><input type="hidden" value="${room.Id}" />-</td>'
+            }
 
             ${ room.Player2
-                ? `
-                <div class="game-room-player-wrapper game-room-player2-wrapper col-sm-2">
+            ? `
+                <td>
                     <input type="hidden" value="${room.Player2.Id}" />
                     <span>${room.Player2.Name}</span>
                     <span>${room.Player2.Ready ? 'Ready' : ''}</span>
-                </div>
-                ${!isPlayerInRoom(room.Id, playerId) ? '<button class="btn btn-primary game-room-btn">JoinRoom</button>' : ''} 
-                ${isPlayerInRoom(room.Id, playerId) ? '<button class="btn btn-primary game-room-btn">Leave Room</button>' : ''}
+                </td>
+                <td>
+                ${!isPlayerInRoom(room.Id, playerId) && !isPlayerInAnyRoom(playerId) ? `<button class="btn btn-primary game-room-btn" onclick="joinRoom(${room.Id})">JoinRoom</button>` : ''} 
+                ${isPlayerInRoom(room.Id, playerId) ? `<button class="btn btn-primary game-room-btn" onclick="leaveRoom()">Leave Room</button>` : ''}
+                </td>
                 `
-                : `<div class="game-room-player-wrapper col-sm-2">-</div> 
-                    ${isPlayerInRoom(room.Id, playerId) ? '<button class="btn btn-primary game-room-btn">Leave Room</button>' : ''}`
-             }
+             : `<td class="game-room-player-wrapper col-sm-2">-</td> 
+                    ${!isPlayerInRoom(room.Id, playerId) && !isPlayerInAnyRoom(playerId) ? `<td><button class="btn btn-primary game-room-btn" onclick="joinRoom(${room.Id})">JoinRoom</button></td>`
+                                                                                         : `${isPlayerInRoom(room.Id, playerId) ? `<td><button class="btn btn-primary game-room-btn" onclick="leaveRoom()">Leave Room</button></td>` : '<td></td>'}`
+                    }`
+            }
 
-        </div>
+        </tr>
     `;
 
     var gameRoom = gameRoomsList.filter(r => r.room == room)[0];
-    if (gameRoom) gameRoom.gameRoomDiv = $gameRoomDiv;
-    
-    $roomsWrapper.append($gameRoomDiv);
+    if (gameRoom) gameRoom.gameRoomDiv = $gameRoomTr;
+
+    $roomsTable.append($gameRoomTr);
 }
 
 function isPlayerInRoom(roomId, playerId) {
+
     if (!roomId || !playerId) return false;
 
-    return !!gameRoomsList
+    var result = !!gameRoomsList
         .map(r => r.room)
-        .filter(r => r.Id === roomId && (r.Player2 && r.Player1.Id === playerId) || (r.Player2 && r.Player2.Id === r.playerId)).length;
+        .filter(r => r.Id === roomId && (r.Player1 && r.Player1.Id === playerId) || (r.Player2 && r.Player2.Id === playerId))
+        .length;
+
+    return result;
 }
 
 function isPlayerInAnyRoom(playerId) {
@@ -95,5 +111,26 @@ function isPlayerInAnyRoom(playerId) {
 
     return !!gameRoomsList
         .map(r => r.room)
-        .filter(r => (r.Player2 && r.Player1.Id === playerId) || (r.Player2 && r.Player2.Id === r.playerId)).length;
+        .filter(r => (r.Player1 && r.Player1.Id === playerId) || (r.Player2 && r.Player2.Id === playerId))
+        .length;
+}
+
+function createRoom() {
+    if (!gameHub) return;
+    gameHub.server.createRoom();
+}
+
+function joinRoom(roomId) {
+    if (!gameHub || !roomId) return;
+    gameHub.server.joinRoom(roomId);
+}
+
+function leaveRoom() {
+    if (!gameHub) return;
+    gameHub.server.leaveRoom();
+}
+
+function iamReady() {
+    if (!gameHub) return;
+    gameHub.server.iamReady();
 }

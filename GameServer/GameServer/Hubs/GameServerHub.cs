@@ -58,6 +58,9 @@ namespace GameServer.Hubs
             {
                 int? playerId = PlayerId;
                 if(playerId.HasValue) await _gameRoomsService.CreateRoomAsync(playerId.Value);
+
+                IEnumerable<GameRoomViewModel> rooms = await _gameRoomsService.GetAllForViewAsync();
+                Clients.All.SentRooms(rooms);
             }
             catch (Exception)
             {
@@ -71,6 +74,9 @@ namespace GameServer.Hubs
             {
                 int? playerId = PlayerId;
                 if (playerId.HasValue) await _gameRoomsService.JoinRoomAsync(roomId, playerId.Value);
+
+                IEnumerable<GameRoomViewModel> rooms = await _gameRoomsService.GetAllForViewAsync();
+                Clients.All.SentRooms(rooms);
             }
             catch (Exception)
             {
@@ -82,6 +88,9 @@ namespace GameServer.Hubs
         {
             int? playerId = PlayerId;
             if(playerId.HasValue) await _gameRoomsService.LeaveRoomAsync(playerId.Value);
+
+            IEnumerable<GameRoomViewModel> rooms = await _gameRoomsService.GetAllForViewAsync();
+            Clients.All.SentRooms(rooms);
         }
 
         public async Task IamReady()

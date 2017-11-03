@@ -20,7 +20,7 @@ namespace GameServer.Repositories.Concrete
         public virtual async Task<T> FindAsync(int id)
         {
             IReadOnlyList<T> entities = await GetAllAsync();
-            return entities.FirstOrDefault();
+            return entities.FirstOrDefault(e => e.Id == id);
         }
 
         public virtual async Task CreateAsync(T entity)
