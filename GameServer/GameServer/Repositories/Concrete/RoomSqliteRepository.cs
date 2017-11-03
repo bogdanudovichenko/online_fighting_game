@@ -24,5 +24,12 @@ namespace GameServer.Repositories.Concrete
             IEnumerable<int> results = await _connect.QueryAsync<int>(query, gameRoom);
             return results.Any();
         }
+
+        public async override Task<bool> RemoveAsync(int id)
+        {
+            string query = $"DELETE FROM {TableName} WHERE id=@id";
+            IEnumerable<int> results = await _connect.QueryAsync<int>(query, new { id });
+            return results.Any();
+        }
     }
 }

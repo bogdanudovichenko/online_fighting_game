@@ -108,8 +108,14 @@ namespace GameServer.Services.Concrete
                 room.Player2Ready = false;
             }
 
-            if (room.Player1Id != null || room.Player2Id != null || room.Player1Id != 0 || room.Player2Id != 0) await _roomRepository.UpdateAsync(room);
-            else await _roomRepository.RemoveAsync(room.Id);
+            if ((room.Player1Id != null && room.Player2Id != null) || (room.Player1Id != 0 && room.Player2Id != 0))
+            {
+                await _roomRepository.UpdateAsync(room);
+            }
+            else
+            {
+                await _roomRepository.RemoveAsync(room.Id);
+            }
         }
 
         public async Task IamReadyAsync(int playerId)
