@@ -79,11 +79,13 @@ function renderGameRoom(room) {
                 ${isPlayerInRoom(room.Id, playerId) ? `<button class="btn btn-primary game-room-btn" onclick="leaveRoom()">Leave Room</button>` : ''}
                 </td>
                 `
-             : `<td class="game-room-player-wrapper col-sm-2">-</td> 
-                    ${!isPlayerInRoom(room.Id, playerId) && !isPlayerInAnyRoom(playerId) ? `<td><button class="btn btn-primary game-room-btn" onclick="joinRoom(${room.Id})">JoinRoom</button></td>`
-                                                                                         : `${isPlayerInRoom(room.Id, playerId) ? `<td><button class="btn btn-primary game-room-btn" onclick="leaveRoom()">Leave Room</button></td>` : '<td></td>'}`
-                    }`
-            }
+                : `<td class="game-room-player-wrapper col-sm-2">-</td> 
+                   <td>
+                            ${!isPlayerInRoom(room.Id, playerId) && !isPlayerInAnyRoom(playerId) ? `<button class="btn btn-primary game-room-btn" onclick="joinRoom(${room.Id})">JoinRoom</button>`
+                                                                                                 : `${isPlayerInRoom(room.Id, playerId) ? `<button class="btn btn-primary game-room-btn" onclick="leaveRoom()">Leave Room</button>` : ''}`
+                            }`
+                    }
+                   </td>
 
         </tr>
     `;
