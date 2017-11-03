@@ -146,7 +146,7 @@ function iamReady() {
 function isPlayerReady(room, playerId) {
     if (!room || !playerId) return false;
 
-    if (room.Player1.Id === playerId && room.Player1.Ready) return true;
-    if (room.Player2.Id === playerId && room.Player2.Ready) return true;
+    if (room.Player1 && room.Player1.Id === playerId && room.Player1.Ready) return true;
+    if (room.Player2 && room.Player2.Id === playerId && room.Player2.Ready) return true;
     return false;
 }
