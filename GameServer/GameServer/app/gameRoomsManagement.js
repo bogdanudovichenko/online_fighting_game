@@ -44,7 +44,7 @@ function renderGameRooms(rooms) {
     $existingButton.remove();
 
     if (!isPlayerInAnyRoom(playerId)) {
-        var button = `<button id="create-room-btn" class="btn btn-success create-room-btn" onclick="createRoom">
+        var button = `<button id="create-room-btn" class="btn btn-success create-room-btn" onclick="createRoom()">
                             Create room
                       </button>`
         $roomsTable.parent().parent().append(button);
