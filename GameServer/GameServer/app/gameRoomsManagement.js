@@ -77,7 +77,7 @@ function renderGameRoom(room) {
                 <td>
                     ${!isPlayerInRoom(room.Id, playerId) && !isPlayerInAnyRoom(playerId) ? `<button class="btn btn-primary game-room-btn" onclick="joinRoom(${room.Id})">JoinRoom</button>` : ''} 
                     ${isPlayerInRoom(room.Id, playerId) ? `<button class="btn btn-primary game-room-btn" onclick="leaveRoom()">Leave Room</button>` : ''}
-                    ${isPlayerInRoom(room.Id, playerId) ? `<button class="btn btn-primary game-room-btn" onclick="iamReady()">Leave Room</button>` : ''}
+                    ${isPlayerInRoom(room.Id, playerId) && isPlayerReady(room, playerId) ? `<button class="btn btn-primary game-room-btn" onclick="iamReady()">I am ready</button>` : ''}
                 </td>
                 `
              : 
@@ -85,6 +85,7 @@ function renderGameRoom(room) {
                  <td>
                     ${!isPlayerInRoom(room.Id, playerId) && !isPlayerInAnyRoom(playerId) ? `<button class="btn btn-primary game-room-btn" onclick="joinRoom(${room.Id})">JoinRoom</button>` : ''} 
                     ${isPlayerInRoom(room.Id, playerId) ? `<button class="btn btn-primary game-room-btn" onclick="leaveRoom()">Leave Room</button>` : ''}
+                    ${isPlayerInRoom(room.Id, playerId) && isPlayerReady(room, playerId) ? `<button class="btn btn-primary game-room-btn" onclick="iamReady()">I am ready</button>` : ''}
                  </td>
                  ` 
             }
@@ -140,4 +141,12 @@ function leaveRoom() {
 function iamReady() {
     if (!gameHub) return;
     gameHub.server.iamReady();
+}
+
+function isPlayerReady(room, playerId) {
+    if (!room || !playerId) return;
+
+    if (room.Player1.Id === playerId && !room.Player1.Ready) return true;
+    if (room.Player2.Id === playerId && !room.Player2.Ready) return true;
+    return false;
 }

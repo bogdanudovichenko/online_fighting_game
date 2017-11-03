@@ -110,6 +110,9 @@ namespace GameServer.Hubs
 
             await _roomRepository.UpdateAsync(gameRoom);
 
+            IEnumerable<GameRoomViewModel> rooms = await _gameRoomsService.GetAllForViewAsync();
+            Clients.All.SentRooms(rooms);
+
             if (gameRoom.IsFull)
             {
                 gameRoom.RoomStatus = (int)GameRoomStatus.InBattle;
