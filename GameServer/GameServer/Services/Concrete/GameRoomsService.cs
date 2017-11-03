@@ -40,7 +40,7 @@ namespace GameServer.Services.Concrete
                 {
                     Id = r.Player2Id,
                     Name = players.FirstOrDefault(p => p.Id == r.Player2Id)?.Login,
-                    Ready = r.Player1Ready
+                    Ready = r.Player2Ready
                 },
                 RoomStatus = r.RoomStatus
             }).ToList();
