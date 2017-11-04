@@ -45,45 +45,13 @@ var enemyState = null;
 
 var enemyActionsQueue = [];
 
-enemyActionsQueue = [
-    { action: 'walk', direction: 'left' },
-    { action: 'walk', direction: 'left' },
-    { action: 'walk', direction: 'left' },
-    { action: 'walk', direction: 'left' },
-    { action: 'walk', direction: 'left' },
-    { action: 'walk', direction: 'left' },
-    { action: 'walk', direction: 'left' },
-    { action: 'walk', direction: 'left' },
-
-    { action: 'walk', direction: 'right' },
-    { action: 'walk', direction: 'right' },
-    { action: 'walk', direction: 'right' },
-    { action: 'walk', direction: 'right' },
-    { action: 'walk', direction: 'right' },
-    { action: 'walk', direction: 'right' },
-    { action: 'walk', direction: 'right' },
-    { action: 'walk', direction: 'right' },
-
-    { action: 'walk', direction: 'left' },
-    { action: 'walk', direction: 'left' },
-    { action: 'walk', direction: 'left' },
-    { action: 'walk', direction: 'left' },
-    { action: 'walk', direction: 'left' },
-    { action: 'walk', direction: 'left' },
-    { action: 'walk', direction: 'left' },
-    { action: 'walk', direction: 'left' },
-
-    { action: 'walk', direction: 'right' },
-    { action: 'walk', direction: 'right' },
-    { action: 'walk', direction: 'right' },
-    { action: 'walk', direction: 'right' },
-    { action: 'walk', direction: 'right' },
-    { action: 'walk', direction: 'right' },
-    { action: 'walk', direction: 'right' },
-    { action: 'walk', direction: 'right' },
-];
+enemyActionsQueue = [];
 
 function startBattle() {
+    //gameHub.client.sentActions = sentActions;
+   
+    $gameCanvas.show();
+    //$roomsTable.hide();
     canvas = document.getElementById('game-canvas');
     stage = new createjs.Stage(canvas);
     init();
@@ -114,8 +82,23 @@ function loadPlayersSprites() {
     loadPlayerSprites(1);
     loadPlayerSprites(2);
 
-    mySelfState = player1State;
-    enemyState = player2State;
+    var rooms = gameRoomsList.map(r => r.room);
+
+    var room = rooms.filter(r => r.Player1 && r.Player2)
+        .filter(r => r.Player1.Ready && r.Player2.Ready)
+        .filter(r => r.Player1.Id === playerId || r.Player2.Id === playerId)[0];
+
+    if (!room) throw 'Can`t start battle because can`t find game room.';
+
+    if (room.Player1.Id == playerId) {
+        mySelfState = player1State;
+        enemyState = player2State;
+    } else if (room.Player2.Id == playerId) {
+        mySelfState = player2State;
+        enemyState = player1State;
+    } else {
+        throw 'Player is not in a room.';
+    }
 }
 
 function loadPlayerSprites(playerNumber) {
@@ -146,7 +129,7 @@ function loadPlayerSprites(playerNumber) {
         var animation = new createjs.Sprite(spriteSheet, "stay");
 
         stage.addChild(animation);
-        
+
         createjs.Ticker.setFPS(8);
         createjs.Ticker.addEventListener("tick", tick);
 
@@ -175,7 +158,7 @@ function onKeyDown(ev) {
             delete pressedKeyCodes[keys.ctrl];
         }, 400);
     }
-    
+
     if (ev.keyCode !== keys.space) {
         delete pressedKeyCodes[keys.space];
     }
@@ -202,7 +185,9 @@ function tick() {
 
 function playerTick() {
     if (isKeyDown) {
-        if (pressedKeyCodes[keys.d]) { //move right
+        if (pressedKeyCodes[keys.d]) { //walk right
+            gameHub.server.doActions({ action: actionsEnum.walk, direction: directionsEnum.right });
+
             if (mySelfState.animation.currentAnimation !== actionsEnum.walk) {
                 mySelfState.animation.gotoAndPlay(actionsEnum.walk);
             }
@@ -215,7 +200,9 @@ function playerTick() {
             }
         }
 
-        if (pressedKeyCodes[keys.a]) { //move left
+        if (pressedKeyCodes[keys.a]) { //walk left
+            gameHub.server.doActions({ action: actionsEnum.walk, direction: directionsEnum.left });
+
             if (mySelfState.animation.currentAnimation !== actionsEnum.walk) {
                 mySelfState.animation.gotoAndPlay(actionsEnum.walk);
             }
@@ -247,6 +234,7 @@ function playerTick() {
     } else if (pressedKeyCodes[keys.ctrl]) {
         if (mySelfState.animation.currentAnimation !== actionsEnum.strike) { //strike
             mySelfState.animation.gotoAndPlay(actionsEnum.strike);
+            gameHub.server.doActions({ action: actionsEnum.strike });
         }
     }
 }
@@ -270,14 +258,32 @@ function enemyTick() {
                 enemyState.animation.x += mySelfState.width;
             }
 
-            enemyState.animation.x -= 15;
-        } else {
+            if(enemyState.animation.x > enemyState.width) {
+                enemyState.animation.x -= 15;
+            }
+        } else {//right
             if (enemyState.animation.scaleX !== 1) {
                 enemyState.animation.scaleX = 1;
                 enemyState.animation.x -= mySelfState.width;
             }
 
-            enemyState.animation.x += 15;
+            if(enemyState.animation.x < canvas.width - enemyState.width) {
+                enemyState.animation.x += 15;
+            }
         }
     }
+
+    if(enemyAction.action === actionsEnum.strike) {
+        if (enemyState.animation.currentAnimation !== actionsEnum.strike) {
+            enemyState.animation.gotoAndPlay(actionsEnum.strike);
+        }
+    }
+}
+
+//game server event
+function sentActions(action) {
+    console.log('sentActions', action);
+    if(!action) return;
+
+    enemyActionsQueue.push(action)
 }

@@ -118,14 +118,14 @@ namespace GameServer.Hubs
                 gameRoom.RoomStatus = (int)GameRoomStatus.InBattle;
                 await _roomRepository.UpdateAsync(gameRoom);
                 List<string> connectionsIdList = GetConnectionsIdListByPlayersIdList(new int[] { gameRoom.Player1Id.Value, gameRoom.Player2Id.Value });
-                Clients.Clients(connectionsIdList).StartBattle("Go");
+                Clients.Clients(connectionsIdList).StartBattle();
             }
         }
 
         #endregion room
 
         #region Battle
-        public async Task DoActions(string actionsJson)
+        public async Task DoActions(GameAction action)
         {
             if (!PlayerId.HasValue) return;
             int playerId = PlayerId.Value;
@@ -135,8 +135,8 @@ namespace GameServer.Hubs
 
             int playerRecipientId = gameRoom.Player1Id == playerId ? gameRoom.Player2Id.Value : gameRoom.Player1Id.Value;
             
-            string connectionId = GetConnectionIdByPlayerId(playerRecipientId);
-            Clients.Client(connectionId).SentActions(actionsJson);
+            List<string> connectionsIdList = GetConnectionsIdListByPlayerId(playerRecipientId);
+            Clients.Clients(connectionsIdList).SentActions(action);
         }
         #endregion Battle
 

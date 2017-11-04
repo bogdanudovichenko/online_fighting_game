@@ -7,8 +7,7 @@ $.get('/api/player/getMyId').done(id => {
 });
 
 $(document).ready(function () {
-    window.gameCanvas = $('#game-canvas')
-    gameCanvas.hide();
+    window.$gameCanvas = $('#game-canvas')
     window.$roomsTable = $('#rooms-table');
 
     gameHubInit();
@@ -25,9 +24,18 @@ function gameHubInit() {
     gameHub.client.sentRooms = function (rooms) {
         renderGameRooms(rooms);
     };
+
+    gameHub.client.startBattle = function() {
+        startBattle();
+    }
+
+    gameHub.client.sentActions = function(act) {
+        enemyActionsQueue.push(act);
+    };
 }
 
 function renderGameRooms(rooms) {
+    $gameCanvas.hide();
     $roomsTable.empty();
 
     gameRoomsList = [];
@@ -48,6 +56,10 @@ function renderGameRooms(rooms) {
                             Создать комнату
                       </button>`
         $roomsTable.parent().parent().append(button);
+    }
+
+    if(canStartBattle()) {
+        startBattle();
     }
 }
 
@@ -149,4 +161,16 @@ function isPlayerReady(room, playerId) {
     if (room.Player1 && room.Player1.Id === playerId && room.Player1.Ready) return true;
     if (room.Player2 && room.Player2.Id === playerId && room.Player2.Ready) return true;
     return false;
+}
+
+function canStartBattle() {
+    if(!rooms || !rooms.length || playerId) false;
+
+    var rooms = gameRoomsList.map(r => r.room);
+
+    var room = rooms.filter(r => r.Player1 && r.Player2)
+                    .filter(r => r.Player1.Ready && r.Player2.Ready)
+                    .filter(r => r.Player1.Id === playerId || r.Player2.Id === playerId)[0];
+
+    return !!room;
 }

@@ -53,9 +53,9 @@ namespace GameServer.Hubs
             return _connections.Where(c => c.PlayerId.HasValue && playersIdList.Contains(c.PlayerId.Value)).Select(c => c.ConnectionId).ToList();
         }
 
-        protected string GetConnectionIdByPlayerId(int playerId)
+        protected  List<string> GetConnectionsIdListByPlayerId(int playerId)
         {
-            return GetConnectionsIdListByPlayersIdList(new[] { playerId })?.FirstOrDefault();
+            return GetConnectionsIdListByPlayersIdList(new[] { playerId });
         }
     }
 }

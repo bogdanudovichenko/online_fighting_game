@@ -211,6 +211,7 @@
     <Compile Include="Models\Auth\AuthResultModel.cs" />
     <Compile Include="Models\Auth\LoginModel.cs" />
     <Compile Include="Models\Auth\RegisterModel.cs" />
+    <Compile Include="Models\Game\GameAction.cs" />
     <Compile Include="Models\Game\ConnectionModel.cs" />
     <Compile Include="Models\Game\Entity.cs" />
     <Compile Include="Models\Game\GameRoom.cs" />
