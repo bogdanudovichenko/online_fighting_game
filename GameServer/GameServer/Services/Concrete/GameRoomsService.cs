@@ -99,22 +99,22 @@ namespace GameServer.Services.Concrete
 
             if (room.Player1Id == playerId)
             {
-                room.Player1Id = 0;
+                room.Player1Id = null;
                 room.Player1Ready = false;
             }
             else if (room.Player2Id == playerId)
             {
-                room.Player2Id = 0;
+                room.Player2Id = null;
                 room.Player2Ready = false;
             }
 
-            if ((room.Player1Id != null && room.Player2Id != null) || (room.Player1Id != 0 && room.Player2Id != 0))
+            if(room.IsEmpty)
             {
-                await _roomRepository.UpdateAsync(room);
+                await _roomRepository.RemoveAsync(room.Id);
             }
             else
             {
-                await _roomRepository.RemoveAsync(room.Id);
+                await _roomRepository.UpdateAsync(room);
             }
         }
 
