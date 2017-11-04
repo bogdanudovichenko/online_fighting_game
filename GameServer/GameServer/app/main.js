@@ -218,6 +218,7 @@ function playerTick() {
         if (pressedKeyCodes[keys.space]) { //jump
             if (mySelfState.animation.currentAnimation !== actionsEnum.jump) {
                 mySelfState.animation.gotoAndPlay(actionsEnum.jump);
+                gameHub.server.doActions({ action: actionsEnum.jump });
             }
 
             mySelfState.animation.y -= 20;
@@ -277,6 +278,20 @@ function enemyTick() {
         if (enemyState.animation.currentAnimation !== actionsEnum.strike) {
             enemyState.animation.gotoAndPlay(actionsEnum.strike);
         }
+    }
+
+    if(enemyAction.action === actionsEnum.jump) {
+        if (enemyState.animation.currentAnimation !== actionsEnum.jump) {
+            enemyState.animation.gotoAndPlay(actionsEnum.jump);
+        }
+
+        enemyState.animation.y -= 20;
+        if (enemyState.animation.scaleX === 1) enemyState.animation.x += 10;
+        else if (enemyState.animation.scaleX === -1) enemyState.animation.x -= 10;
+
+        setTimeout(function () {
+            enemyState.animation.y += 20;
+        }, 500);
     }
 }
 
