@@ -263,7 +263,8 @@ function playerTick() {
             mySelfState.animation.gotoAndPlay(actionsEnum.strike);
             gameHub.server.doActions({ action: actionsEnum.strike });
 
-            if (calculateDistanse(mySelfState, enemyState) <= mySelfState.width && isFaceToFace(mySelfState, enemyState)) {
+            if (calculateDistanse(mySelfState, enemyState) <= mySelfState.width 
+                    && (isFaceToFace(mySelfState, enemyState) || isFaceToBack(mySelfState, enemyState))) {
                 enemyState.takeStrike();
             }
         }
@@ -343,6 +344,17 @@ function isFaceToFace(player1State, player2State) {
 
     if ((player1State.animation.x + player1State.width) > player2State.animation.x
         && player1State.animation.scaleX === -1 && player2State.animation.scaleX === 1) return true
+
+    return false;
+}
+
+function isFaceToBack(player1State, player2State) {
+
+    if(player1State.animation.x > player2State.animation.x && (player1State.animation.x - player1State.width / 1.5) <= player2State.animation.x
+        && player1State.animation.scaleX === -1 && player2State.animation.scaleX === -1) return true;
+
+    if(player1State.animation.x < player2State.animation.x && (player1State.animation.x + player1State.width / 1.5) >= player2State.animation.x
+        && player1State.animation.scaleX === 1 && player2State.animation.scaleX === 1) return true;
 
     return false;
 }
