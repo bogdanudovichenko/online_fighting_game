@@ -26,7 +26,7 @@ textarea {
 #game-canvas {
     position: relative;
     border: 1px solid black;
-    margin: 50px 0;
+    margin: 0px 0;
 }
 
 .room-wrapper {
@@ -46,4 +46,19 @@ textarea {
 
 .create-room-btn {
     margin-left: 15px;
+}
+
+#players-health-wrapper {
+    font-weight: bold;
+    font-size: 34px;
+}
+
+#player1-health {
+    color: darkred;
+    margin-left: 15px;
+}
+
+#player2-health {
+    color: forestgreen;
+    margin-left: 605px;
 }

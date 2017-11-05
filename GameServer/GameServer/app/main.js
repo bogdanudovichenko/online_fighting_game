@@ -3,6 +3,9 @@
 var canvas = null;
 var stage = null;
 
+var $player1Health = $('#player1-health');
+var $player2Health = $('#player2-health');
+
 var keys = {
     a: 65,
     d: 68,
@@ -49,7 +52,7 @@ enemyActionsQueue = [];
 
 function startBattle() {
     //gameHub.client.sentActions = sentActions;
-   
+
     $gameCanvas.show();
     //$roomsTable.hide();
     canvas = document.getElementById('game-canvas');
@@ -93,11 +96,34 @@ function loadPlayersSprites() {
     if (room.Player1.Id == playerId) {
         mySelfState = player1State;
         enemyState = player2State;
+
+        mySelfState.healthBlock = $player1Health;
+        enemyState.healthBlock = $player2Health;
     } else if (room.Player2.Id == playerId) {
         mySelfState = player2State;
         enemyState = player1State;
+
+        mySelfState.healthBlock = $player2Health;
+        enemyState.healthBlock = $player1Health;
     } else {
         throw 'Player is not in a room.';
+    }
+
+    mySelfState.setHp = setHp;
+    enemyState.setHp = setHp;
+    mySelfState.takeStrike = takeStrike;
+    enemyState.takeStrike = takeStrike;
+
+    mySelfState.setHp(100);
+    enemyState.setHp(100);
+
+    function setHp(hp) {
+        this.hp = hp;
+        this.healthBlock.text(hp);
+    }
+
+    function takeStrike() {
+        this.setHp(this.hp - 10);
     }
 }
 
@@ -236,6 +262,10 @@ function playerTick() {
         if (mySelfState.animation.currentAnimation !== actionsEnum.strike) { //strike
             mySelfState.animation.gotoAndPlay(actionsEnum.strike);
             gameHub.server.doActions({ action: actionsEnum.strike });
+
+            if (calculateDistanse(mySelfState, enemyState) <= mySelfState.width && isFaceToFace(mySelfState, enemyState)) {
+                enemyState.takeStrike();
+            }
         }
     }
 }
@@ -259,7 +289,7 @@ function enemyTick() {
                 enemyState.animation.x += mySelfState.width;
             }
 
-            if(enemyState.animation.x > enemyState.width) {
+            if (enemyState.animation.x > enemyState.width) {
                 enemyState.animation.x -= 15;
             }
         } else {//right
@@ -268,19 +298,19 @@ function enemyTick() {
                 enemyState.animation.x -= mySelfState.width;
             }
 
-            if(enemyState.animation.x < canvas.width - enemyState.width) {
+            if (enemyState.animation.x < canvas.width - enemyState.width) {
                 enemyState.animation.x += 15;
             }
         }
     }
 
-    if(enemyAction.action === actionsEnum.strike) {
+    if (enemyAction.action === actionsEnum.strike) {
         if (enemyState.animation.currentAnimation !== actionsEnum.strike) {
             enemyState.animation.gotoAndPlay(actionsEnum.strike);
         }
     }
 
-    if(enemyAction.action === actionsEnum.jump) {
+    if (enemyAction.action === actionsEnum.jump) {
         if (enemyState.animation.currentAnimation !== actionsEnum.jump) {
             enemyState.animation.gotoAndPlay(actionsEnum.jump);
         }
@@ -298,7 +328,21 @@ function enemyTick() {
 //game server event
 function sentActions(action) {
     console.log('sentActions', action);
-    if(!action) return;
+    if (!action) return;
 
     enemyActionsQueue.push(action)
+}
+
+function calculateDistanse(player1State, player2State) {
+    return Math.abs(Math.abs(player1State.animation.x - player2State.animation.x) - player1State.width / 3);
+}
+
+function isFaceToFace(player1State, player2State) {
+    if ((player1State.animation.x + player1State.width) < player2State.animation.x
+        && player1State.animation.scaleX === 1 && player2State.animation.scaleX === -1) return true;
+
+    if ((player1State.animation.x + player1State.width) > player2State.animation.x
+        && player1State.animation.scaleX === -1 && player2State.animation.scaleX === 1) return true
+
+    return false;
 }
