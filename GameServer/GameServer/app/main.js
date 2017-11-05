@@ -55,6 +55,7 @@ function startBattle() {
     //gameHub.client.sentActions = sentActions;
 
     $gameCanvas.show();
+    $('#players-health-wrapper').show();
     //$roomsTable.hide();
     canvas = document.getElementById('game-canvas');
     stage = new createjs.Stage(canvas);

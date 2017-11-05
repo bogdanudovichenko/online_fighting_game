@@ -61,6 +61,7 @@ function onGameEnd() {
 
 function renderGameRooms(rooms) {
     $gameCanvas.hide();
+    $('#players-health-wrapper').hide();
     $roomsTable.empty();
 
     gameRoomsList = [];
