@@ -47,6 +47,7 @@ var mySelfState = null;
 var enemyState = null;
 
 var enemyActionsQueue = [];
+var strikeQueue = [];
 
 enemyActionsQueue = [];
 
@@ -123,7 +124,8 @@ function loadPlayersSprites() {
     }
 
     function takeStrike() {
-        this.setHp(this.hp - 10);
+        if(this.hp > 0) this.setHp(this.hp - 10);
+        if(mySelfState === this && this.hp <= 0) gameHub.server.lose();
     }
 }
 
@@ -210,6 +212,11 @@ function tick() {
 }
 
 function playerTick() {
+    if(strikeQueue && strikeQueue.length) {
+        strikeQueue.shift();
+        mySelfState.takeStrike();
+    } 
+
     if (isKeyDown) {
         if (pressedKeyCodes[keys.d]) { //walk right
             gameHub.server.doActions({ action: actionsEnum.walk, direction: directionsEnum.right });
@@ -265,6 +272,7 @@ function playerTick() {
 
             if (calculateDistanse(mySelfState, enemyState) <= mySelfState.width 
                     && (isFaceToFace(mySelfState, enemyState) || isFaceToBack(mySelfState, enemyState))) {
+                gameHub.server.strike();
                 enemyState.takeStrike();
             }
         }

@@ -1,6 +1,7 @@
 ﻿var gameRoomsList = [];
 var playerId = null;
 var gameHub = null;
+var $gameMessage = $('#game-message-block');
 
 $.get('/api/player/getMyId').done(id => {
     playerId = id;
@@ -15,6 +16,7 @@ $(document).ready(function () {
 
 function gameHubInit() {
     var gameHub = $.connection.gameHub;
+    $gameMessage.text('');
 
     $.connection.hub.start().done(function () {
         gameHub.server.getRooms();
@@ -32,6 +34,29 @@ function gameHubInit() {
     gameHub.client.sentActions = function(act) {
         enemyActionsQueue.push(act);
     };
+
+    gameHub.client.takeStrike = function () {
+        strikeQueue.push(true);
+    };
+
+    gameHub.client.win = function() {
+        $gameMessage.text('You win');
+        onGameEnd();
+        
+    };
+
+    gameHub.client.lose = function () {
+        $gameMessage.text('You lose');
+        onGameEnd();
+    };
+}
+
+function onGameEnd() {
+    $gameCanvas.hide();
+    setTimeout(function() {
+            $gameMessage.text('');
+            startBattle();
+        }, 2000);
 }
 
 function renderGameRooms(rooms) {

@@ -62,3 +62,10 @@ textarea {
     color: forestgreen;
     margin-left: 605px;
 }
+
+#game-message-block {
+    text-align: center;
+    font-size: 48px;
+    font-weight: bold;
+    color: red;
+}

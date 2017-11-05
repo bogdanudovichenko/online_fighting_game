@@ -138,6 +138,37 @@ namespace GameServer.Hubs
             List<string> connectionsIdList = GetConnectionsIdListByPlayerId(playerRecipientId);
             Clients.Clients(connectionsIdList).SentActions(action);
         }
+
+        public async Task Strike()
+        {
+            if (!PlayerId.HasValue) return;
+            int playerId = PlayerId.Value;
+
+            GameRoom gameRoom = await _roomRepository.FindRoomByPlayerIdAsync(playerId);
+            if (gameRoom == null || !gameRoom.Player1Id.HasValue || gameRoom.Player1Id == 0 || !gameRoom.Player2Id.HasValue || gameRoom.Player2Id == 0) return;
+
+            int playerRecipientId = gameRoom.Player1Id == playerId ? gameRoom.Player2Id.Value : gameRoom.Player1Id.Value;
+
+            List<string> connectionsIdList = GetConnectionsIdListByPlayerId(playerRecipientId);
+            Clients.Clients(connectionsIdList).TakeStrike();
+        }
+
+        public async Task Lose()
+        {
+            if (!PlayerId.HasValue) return;
+            int playerId = PlayerId.Value;
+
+            GameRoom gameRoom = await _roomRepository.FindRoomByPlayerIdAsync(playerId);
+            if (gameRoom == null || !gameRoom.Player1Id.HasValue || gameRoom.Player1Id == 0 || !gameRoom.Player2Id.HasValue || gameRoom.Player2Id == 0) return;
+
+            int playerRecipientId = gameRoom.Player1Id == playerId ? gameRoom.Player2Id.Value : gameRoom.Player1Id.Value;
+
+            List<string> winnerConnectionsIdList = GetConnectionsIdListByPlayerId(playerRecipientId);
+            List<string> loserConnectionsIdList = GetConnectionsIdListByPlayerId(playerId);
+            Clients.Clients(winnerConnectionsIdList).Win();
+            Clients.Clients(loserConnectionsIdList).Lose();
+        }
+
         #endregion Battle
 
         private async Task _SwitchPlayerToOnline()
